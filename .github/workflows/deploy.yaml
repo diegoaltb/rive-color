@@ -26,8 +26,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Extract repo name
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+
       - name: Build web
-        run: flutter build web
+        run: flutter build web --base-href /$REPO_NAME/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
