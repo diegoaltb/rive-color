@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'dart:typed_data';
 import 'package:rive/rive.dart';
-import 'package:rive/src/core/core.dart' as rc;
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 void main() {
@@ -44,25 +43,22 @@ class SelfAwareSolidColor extends SolidColor {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   FilePickerResult? result;
   Map<int, int> colors = {};
 
   void selectFile() {
-    FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['riv'],
-    ).then((value) {
-        setState(() {
-          result = value;
-          colors.clear();
+    FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['riv'])
+        .then((value) {
+          setState(() {
+            result = value;
+            colors.clear();
+          });
         });
-    });
   }
 
   @override
   void initState() {
-
     super.initState();
     RiveFile.initialize();
   }
@@ -77,69 +73,79 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Row(
         children: [
           Flexible(
-            child: Column(    
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      if(result != null)
-                        SizedBox(
-                          height: 300,
-                          child: RiveAnimation.direct(
-                            RiveFile.import(ByteData.sublistView((result!.files.first.bytes!)),
-                              objectGenerator: (coreTypeKey) {
-                                if(rc.RiveCoreContext.makeCoreInstance(coreTypeKey) is SolidColor) {
-                                  return SelfAwareSolidColor((value) {
-                                    if(colors.containsKey(value)) {
-                                      return colors[value]!;
-                                    }
-                                    setState(() {
-                                      colors[value] = value;
-                                    });
-                                    return value;
-                                  });
-                                }
-                              },
-                            ),      
-                                  
-                            fit: BoxFit.contain,                
-                          ),
-                        ),
-                      Text(result != null
-                          ? result!.files.first.name
-                          : 'Selecione um arquivo Rive',
-                        style: Theme.of(context).textTheme.headlineMedium,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (result != null)
+                  SizedBox(
+                    height: 300,
+                    child: RiveAnimation.direct(
+                      RiveFile.import(
+                        ByteData.sublistView((result!.files.first.bytes!)),
+                        objectGenerator: (coreTypeKey) {
+                          if (coreTypeKey == SolidColorBase.typeKey) {
+                            return SelfAwareSolidColor((value) {
+                              if (colors.containsKey(value)) {
+                                return colors[value]!;
+                              }
+                              setState(() {
+                                colors[value] = value;
+                              });
+                              return value;
+                            });
+                          }
+                          return null;
+                        },
                       ),
-                    ],
+
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                Text(
+                  result != null
+                      ? result!.files.first.name
+                      : 'Selecione um arquivo Rive',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              ],
             ),
           ),
           Flexible(
             child: Column(
               children: [
-                for(final e in colors.entries)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Cor: '),
-                        Icon(Icons.square, color: Color(e.key)),
-                        const Text(' -> '),
-                        Icon(Icons.square, color: Color(e.value)),
-                        const SizedBox(width: 10),
-                        IconButton(
-                          color: Color(e.value),
-                          onPressed: (){
-                            showDialog(context: context, builder: (ctx)=> Dialog(
-                              child: SingleChildScrollView(
-                                child: ColorPicker(
-                                  pickerColor: Color(e.value),
-                                  onColorChanged: (c){
-                                    setState(() {
-                                      colors[e.key] = c.toARGB32();
-                                    });
-                                  }),
-                              ),
-                            ));
-                          }, icon: const Icon(Icons.edit)),
-                                            const SizedBox(width: 10),
-              if(e.key != e.value)
+                for (final e in colors.entries)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Cor: '),
+                      Icon(Icons.square, color: Color(e.key)),
+                      const Text(' -> '),
+                      Icon(Icons.square, color: Color(e.value)),
+                      const SizedBox(width: 10),
+                      IconButton(
+                        color: Color(e.value),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (ctx) => Dialog(
+                                  child: SingleChildScrollView(
+                                    child: ColorPicker(
+                                      pickerColor: Color(e.value),
+                                      onColorChanged: (c) {
+                                        setState(() {
+                                          colors[e.key] = c.toARGB32();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                          );
+                        },
+                        icon: const Icon(Icons.edit),
+                      ),
+                      const SizedBox(width: 10),
+                      if (e.key != e.value)
                         IconButton(
                           onPressed: () {
                             setState(() {
@@ -148,12 +154,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           },
                           icon: Icon(Icons.undo, color: Color(e.key)),
                         ),
-                      ],
-                    ),
+                    ],
+                  ),
               ],
             ),
           ),
-          
         ],
       ),
       floatingActionButton: FloatingActionButton(
