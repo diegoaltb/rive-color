@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'dart:typed_data';
 import 'package:rive/rive.dart';
+import 'package:rive/src/rive_core/shapes/paint/gradient_stop.dart';
+import 'package:rive/src/generated/shapes/paint/gradient_stop_base.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 void main() {
@@ -34,6 +36,16 @@ class MyHomePage extends StatefulWidget {
 
 class SelfAwareSolidColor extends SolidColor {
   SelfAwareSolidColor(this.colorMapper);
+  final int Function(int) colorMapper;
+
+  @override
+  set colorValue(int value) {
+    super.colorValue = colorMapper(value);
+  }
+}
+
+class SelfAwareGradientStop extends GradientStop {
+  SelfAwareGradientStop(this.colorMapper);
   final int Function(int) colorMapper;
 
   @override
@@ -83,8 +95,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       RiveFile.import(
                         ByteData.sublistView((result!.files.first.bytes!)),
                         objectGenerator: (coreTypeKey) {
-                          if (coreTypeKey == SolidColorBase.typeKey) {
-                            return SelfAwareSolidColor((value) {
+                          if (coreTypeKey == SolidColorBase.typeKey ||
+                              coreTypeKey == GradientStopBase.typeKey) {
+                            return (coreTypeKey == SolidColorBase.typeKey
+                                ? SelfAwareSolidColor.new
+                                : SelfAwareGradientStop.new)((value) {
                               if (colors.containsKey(value)) {
                                 return colors[value]!;
                               }
