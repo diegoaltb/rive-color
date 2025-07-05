@@ -126,52 +126,54 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Flexible(
-            child: Column(
-              children: [
-                for (final e in colors.entries)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Cor: '),
-                      Icon(Icons.square, color: Color(e.key)),
-                      const Text(' -> '),
-                      Icon(Icons.square, color: Color(e.value)),
-                      const SizedBox(width: 10),
-                      IconButton(
-                        color: Color(e.value),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (ctx) => Dialog(
-                                  child: SingleChildScrollView(
-                                    child: ColorPicker(
-                                      pickerColor: Color(e.value),
-                                      onColorChanged: (c) {
-                                        setState(() {
-                                          colors[e.key] = c.toARGB32();
-                                        });
-                                      },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  for (final e in colors.entries)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Cor: '),
+                        Icon(Icons.square, color: Color(e.key)),
+                        const Text(' -> '),
+                        Icon(Icons.square, color: Color(e.value)),
+                        const SizedBox(width: 10),
+                        IconButton(
+                          color: Color(e.value),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder:
+                                  (ctx) => Dialog(
+                                    child: SingleChildScrollView(
+                                      child: ColorPicker(
+                                        pickerColor: Color(e.value),
+                                        onColorChanged: (c) {
+                                          setState(() {
+                                            colors[e.key] = c.toARGB32();
+                                          });
+                                        },
+                                      ),
                                     ),
                                   ),
-                                ),
-                          );
-                        },
-                        icon: const Icon(Icons.edit),
-                      ),
-                      const SizedBox(width: 10),
-                      if (e.key != e.value)
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              colors[e.key] = e.key;
-                            });
+                            );
                           },
-                          icon: Icon(Icons.undo, color: Color(e.key)),
+                          icon: const Icon(Icons.edit),
                         ),
-                    ],
-                  ),
-              ],
+                        const SizedBox(width: 10),
+                        if (e.key != e.value)
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                colors[e.key] = e.key;
+                              });
+                            },
+                            icon: Icon(Icons.undo, color: Color(e.key)),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
             ),
           ),
         ],
